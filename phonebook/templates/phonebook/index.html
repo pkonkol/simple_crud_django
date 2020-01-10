@@ -1,0 +1,69 @@
+<a href="{% url 'add' %}"><button>Dodaj osobe</button></a>
+<div><h2>Szukaj</h2>
+    <form method="GET" id="search" action="{% url 'search' %}">
+        <input type="text" name="query"/>
+    </form>
+        <p>Szukanie po:</p>
+    <select name="searchfield" form="search">
+        <option value="osoba">Osoba</option>
+        <option value="telefon">Telefon</option>
+        <option value="email">Email</option>
+    </select>
+
+</div>
+<hr>
+<br>
+
+{% for osoba, kontakt in osoby %}
+<table border="1px solid black">
+    <tr><td>ID</td> <td>Imie</td> <td>Nazwisko</td></tr>
+    <tr><td>{{ osoba.id }}</td><td>{{ osoba.imie }}</td><td>{{ osoba.nazwisko }}</td></tr>
+</table>
+<a href="{% url 'delete' osoba.id %}"><button> Usun uzytkownika </button></a>
+<a href="{% url 'edit' osoba.id %}"><button> Edytuj uzytkownika </button></a>
+<br>
+<table border="1px solid black">
+    <tr><td>Telefony</td><td>Emaile</td>
+    {% for telefon, email in kontakt %}
+    <tr>{% if telefon.telefon %}
+        <td>Numer {{ telefon.telefon }}
+            <form method="post"> {% csrf_token %}
+                <button name="del_fon" type="submit" value="{{ telefon.id }}">Usun nr</button>
+             </form>
+        </td> {% else %} <td></td> {% endif %}
+        {% if email.email %}
+        <td>E-mail: {{ email.email }}
+            <form method="post"> {% csrf_token %}
+                    <button name="del_mail" type="submit" value="{{ email.id }}">Usun mail</button>
+            </form>
+        </td> {% else %} <td></td> {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+<br>
+<table>
+    <td>
+        <form method="post">
+            {% csrf_token %}
+            <table>
+                {{ telefon_form }}
+                <tr><td><input type='hidden' name='osoba' value='{{ osoba.id }}'/></td></tr>
+                <tr><td><button type="submit">Dodaj telefon</button></td></tr>
+            </table>
+        </form>
+    </td>
+    <td>
+        <form method="post">
+            {% csrf_token %}
+            <table>
+                {{ email_form }}
+                <tr><td><input type='hidden' name='osoba' value='{{ osoba.id }}'/></td></tr>
+                <tr><td><button type="submit">Dodaj email</button></td></tr>
+            </table>
+        </form>
+    </td>
+</table>
+<hr>
+{% endfor %}
